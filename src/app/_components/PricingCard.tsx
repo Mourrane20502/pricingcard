@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { subscriptionsArray } from "@/data/subcriptions";
 import formatterNumber from "@/lib/formatterNumber";
+import { animated, useSpring } from "@react-spring/web";
 import { ChevronRight } from "lucide-react";
 import Feature from "./Feature";
 
@@ -25,8 +25,30 @@ export default function PricingCard({
   canExportData,
   canAccessAllFeatures,
   canHandlePayment,
-}: (typeof subscriptionsArray)[number]) {
+  discount,
+}: {
+  name: string;
+  price: number;
+  duration: string;
+  visitors: number;
+  canUpgrade: boolean;
+  canAccessAnalytics: boolean;
+  canCreateProjects: boolean;
+  canAddUsers: boolean;
+  canAccessSupport: boolean;
+  canExportData: boolean;
+  canAccessAllFeatures: boolean;
+  canHandlePayment: boolean;
+  discount: boolean;
+}) {
   const isMostPopular = name === "Standard Plan";
+  const discountedPrice = discount ? price * 0.9 : price;
+
+  const { number } = useSpring({
+    from: { number: price },
+    to: { number: discountedPrice },
+    config: { tension: 1000, friction: 70, duration: 500 },
+  });
 
   return (
     <Card
@@ -47,7 +69,9 @@ export default function PricingCard({
       </CardHeader>
 
       <CardContent className="flex-grow">
-        <h2 className="text-5xl">{price}$</h2>
+        <h2 className="text-5xl ">
+          $<animated.span>{number.to((n) => `${n.toFixed(2)}`)}</animated.span>
+        </h2>
         <p className="text-lg mt-2">{duration}</p>
       </CardContent>
 
