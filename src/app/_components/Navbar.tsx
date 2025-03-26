@@ -51,7 +51,7 @@ export default function Navbar() {
       <div className="ml-auto flex items-center gap-2">
         <Button className="bg-black px-6 py-5 group" size="icon">
           <Link
-            href="/https://github.com/Mourrane20502/pricingcard"
+            href="https://github.com/Mourrane20502/pricingcard"
             className="text-white flex items-center justify-center"
           >
             <Github className="size-5" />
