@@ -8,8 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import formatterNumber from "@/lib/formatterNumber";
-import { animated, useSpring } from "@react-spring/web";
+import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import { useEffect } from "react";
 import Feature from "./Feature";
 
 export default function PricingCard({
@@ -42,13 +43,21 @@ export default function PricingCard({
   discount: boolean;
 }) {
   const isMostPopular = name === "Standard Plan";
-  const discountedPrice = discount ? price * 0.9 : price;
+  const discountedPrice = discount ? price * 0.65 : price; // 35% discount
 
-  const { number } = useSpring({
-    from: { number: price },
-    to: { number: discountedPrice },
-    config: { tension: 1000, friction: 70, duration: 500 },
-  });
+  // Motion value for animating the price
+  const animatedPrice = useMotionValue(price);
+  const displayedPrice = useTransform(animatedPrice, (value) =>
+    value.toFixed(2)
+  );
+
+  // Animate price change when discount state changes
+  useEffect(() => {
+    animate(animatedPrice, discountedPrice, {
+      duration: 0.8,
+      ease: "easeInOut",
+    });
+  }, [discountedPrice, animatedPrice]);
 
   return (
     <Card
@@ -69,8 +78,15 @@ export default function PricingCard({
       </CardHeader>
 
       <CardContent className="flex-grow">
-        <h2 className="text-5xl ">
-          $<animated.span>{number.to((n) => `${n.toFixed(2)}`)}</animated.span>
+        <h2 className="text-5xl font-medium">
+          $
+          <motion.span
+            animate={{ y: [10, 0] }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{ display: "inline-block" }}
+          >
+            {displayedPrice}
+          </motion.span>
         </h2>
         <p className="text-lg mt-2">{duration}</p>
       </CardContent>
